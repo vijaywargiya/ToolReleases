@@ -26,14 +26,14 @@ public enum ToolFilter: CaseIterable, CustomStringConvertible {
 }
 
 extension Array where Element == Tool {
-    public func filtered(by filter: ToolFilter) -> [Element] {
-        switch filter {
-        case .all:
+    public func filtered(showBeta: Bool, showRelease: Bool) -> [Element] {
+        if showBeta && showRelease {
             return self
-        case .beta:
+        } else if showBeta {
             return self.filter { $0.isBeta || $0.isGMSeed }
-        case .release:
+        } else if showRelease {
             return self.filter { $0.isRelease }
         }
+        return self.filter { $0.description == "random" }
     }
 }

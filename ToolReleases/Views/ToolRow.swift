@@ -14,14 +14,14 @@ import ToolReleasesCore
 struct ToolRow: View {
     let tool: Tool
     let timer: Publishers.Autoconnect<Timer.TimerPublisher>
-
+    
     @State private var showPopover = false
     @State private var currentDate = Date()
-
+    
     private var isRecentRelease: Bool {
         ToolReleaseDateComparison.isTool(tool, releasedLessThan: 3, .day, since: currentDate)
     }
-
+    
     private var formattedDate: String {
         if ToolReleaseDateComparison.isTool(tool, releasedLessThan: 1, .minute, since: currentDate) {
             return "Just now"
@@ -29,15 +29,23 @@ struct ToolRow: View {
             return RelativeDateTimeFormatter().localizedString(for: tool.date, relativeTo: currentDate).capitalized
         }
     }
-
+    
+    
+    private func open() {
+        if let url = tool.url {
+            NSWorkspace.shared.open(url)
+        }
+    }
+    
     var body: some View {
         HStack {
+            
             Text(tool.title)
                 .font(.system(size: 12, weight: .medium, design: .default))
                 .lineLimit(nil)
-
+            
             Spacer()
-
+            
             Text(formattedDate)
                 .font(.system(size: 10, weight: isRecentRelease == true ? .bold : .light, design: .default))
                 .foregroundColor(isRecentRelease == true ? Color("forestgreen") : .secondary)
@@ -52,7 +60,7 @@ struct ToolRow: View {
         .padding([.vertical], 4)
         .onReceive(timer, perform: updateCurrentDate)
     }
-
+    
     func updateCurrentDate(_ date: Date) {
         self.currentDate = date
         os_log(.debug, log: .views, "Tool date refreshed for %{public}@", self.tool.title)
@@ -63,7 +71,7 @@ struct ReleasedToolRow_Previews: PreviewProvider {
     static let tool: Tool = {
         let components = DateComponents(second: -30)
         let date = Calendar.current.date(byAdding: components, to: .now)!
-
+        
         return Tool(
             id: "https://developer.apple.com/news/releases/?id=1234567890a",
             title: "iOS 14.0 (1234567890)",
@@ -72,7 +80,7 @@ struct ReleasedToolRow_Previews: PreviewProvider {
             description: "New release of iOS 14.0"
         )
     }()
-
+    
     static var previews: some View {
         ToolRow(tool: Self.tool, timer: Timer.publish(every: 1, on: .main, in: .common).autoconnect())
             .frame(width: 300)
