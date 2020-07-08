@@ -22,6 +22,8 @@ public class ToolManager: ObservableObject {
     @Published public private(set) var isRefreshing = false
     @Published public private(set) var lastRefresh: Date?
     @Published public private(set) var newReleasesAvailable = false
+    @Published public var showBeta = true
+    @Published public var showRelease = true
 
     public init() {
         self.privateQueue = DispatchQueue(label: "com.developermaris.ToolReleases.Core.ToolsManager", qos: .userInitiated)

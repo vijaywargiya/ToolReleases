@@ -27,7 +27,7 @@ struct ContentView: View {
 
     private var sortedTools: [Tool] {
         toolManager.tools
-            .filtered(by: filter)
+            .filtered(showBeta: toolManager.showBeta, showRelease: toolManager.showRelease)
             .sorted(by: { $0.date > $1.date })
     }
 
@@ -41,19 +41,33 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            // Filter section
             HStack {
-                Picker("Select filter", selection: $filter) {
-                    ForEach(ToolFilter.allCases, id: \.self) {
-                        Text($0.description)
+                Button(action: self.fetch) {
+                    if toolManager.isRefreshing {
+                        ActivityIndicatorView(spinning: true)
+                    } else {
+                        Image("refresh")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 16, height: 16)
+                        
                     }
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .labelsHidden()
+                .buttonStyle(BorderlessButtonStyle())
+                .disabled(toolManager.isRefreshing)
 
+
+                Text(formattedLastRefreshDate)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Spacer()
+                
                 PreferencesView()
             }
-            .padding([.top, .horizontal])
+            .padding(.top, 10)
+            .padding(.horizontal)
+
 
             Divider()
 
@@ -81,29 +95,7 @@ struct ContentView: View {
                 }
             }
 
-            Divider()
 
-            HStack {
-                Text(formattedLastRefreshDate)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                Spacer()
-
-                Button(action: self.fetch) {
-                    if toolManager.isRefreshing {
-                        ActivityIndicatorView(spinning: true)
-                    } else {
-                        Image("refresh")
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                    }
-                }
-                .buttonStyle(BorderlessButtonStyle())
-                .disabled(toolManager.isRefreshing)
-            }
-            .padding(.bottom, 10)
-            .padding(.horizontal)
         }
         .onAppear {
             self.fetch()

@@ -37,7 +37,7 @@ class FilterTests: XCTestCase {
         let tools: [Tool] = [release1, release2, beta1, beta2, gm1]
 
         // When
-        let result = tools.filtered(by: .release)
+        let result = tools.filtered(showBeta: false, showRelease: true)
 
         // Then
         XCTAssertEqual(result.count, 2)
@@ -48,7 +48,7 @@ class FilterTests: XCTestCase {
         let tools: [Tool] = [release1, release2, beta1, beta2, gm1]
 
         // When
-        let result = tools.filtered(by: .beta)
+        let result = tools.filtered(showBeta: true, showRelease: false)
 
         // Then
         XCTAssertEqual(result.count, 3)
@@ -59,7 +59,7 @@ class FilterTests: XCTestCase {
         let tools: [Tool] = [release1, release2, beta1, beta2, gm1]
 
         // When
-        let result = tools.filtered(by: .all)
+        let result = tools.filtered(showBeta: true, showRelease: true)
 
         // Then
         XCTAssertEqual(result.count, 5)
